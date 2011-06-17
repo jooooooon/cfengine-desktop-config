@@ -30,5 +30,5 @@ bundle agent base_packages {
 	"$(install_packages)"
 		package_method  => generic,
 		package_policy  => "addupdate",
-		action          => if_elapsed(120); # only try aptitude update few hours, that's already plenty!
+		action          => if_elapsed(120); # only try updating every few hours, that's already plenty!
 }
