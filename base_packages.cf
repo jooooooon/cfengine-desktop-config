@@ -1,0 +1,34 @@
+bundle agent base_packages {
+ vars:
+	ubuntu::
+		"thunderbird"	string => "thunderbird";
+	debian.!ubuntu::
+		"thunderbird"	string => "icedove";
+
+	any::
+
+	"package_list_shell" slist => {
+			"vim",
+			"tree",
+			"htop",
+			"rsync",
+			"git-core", "gitk",
+			"bsdgames"
+		};
+
+	"package_list_apps" slist => {
+			"terminator",
+			"$(thunderbird)", "$(thunderbird)-l10n-fr", "$(thunderbird)-l10n-en-gb",
+			"$(thunderbird)-nostalgy",
+			"network-manager-openvpn-gnome",
+			"virt-manager"
+		};
+
+	"install_packages" slist => { @(package_list_shell), @(package_list_apps) };
+
+ packages:
+	"$(install_packages)"
+		package_method  => generic,
+		package_policy  => "addupdate",
+		action          => if_elapsed(120); # only try aptitude update few hours, that's already plenty!
+}

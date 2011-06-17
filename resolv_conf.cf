@@ -1,0 +1,21 @@
+bundle agent resolv_conf {
+ vars:
+	"domain" string => "normation.com";
+
+ files:
+	"/etc/resolv.conf"
+		edit_line => resolv_conf_search("$(domain)"),
+		classes   => if_repaired("edited_resolv_conf");
+
+ reports:
+	edited_resolv_conf::
+		"Set the search domain $(domain) in /etc/resolv.conf";
+}
+
+bundle edit_line resolv_conf_search(domain) {
+ delete_lines:
+	"^search.*";
+
+ insert_lines:
+	"search $(domain)";
+}

@@ -1,0 +1,11 @@
+body common control {
+	bundlesequence => {
+		"base_packages",
+		"resolv_conf"
+	};
+	inputs         => {
+		"cfengine_stdlib.cf",
+		"base_packages.cf",
+		"resolv_conf.cf"
+	};
+}
