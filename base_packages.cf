@@ -1,9 +1,14 @@
 bundle agent base_packages {
  vars:
 	ubuntu::
-		"thunderbird"	string => "thunderbird";
+		"thunderbird"       string => "thunderbird";
+		"thunderbird_l10n"  string => "locale";
+
 	debian.!ubuntu::
-		"thunderbird"	string => "icedove";
+		"thunderbird"       string => "icedove";
+		"thunderbird_l10n"  string => "l10n";
+
+		"distro_specific_packages" slist => { "$(thunderbird)-nostalgy" };
 
 	any::
 
@@ -18,13 +23,17 @@ bundle agent base_packages {
 
 	"package_list_apps" slist => {
 			"terminator",
-			"$(thunderbird)", "$(thunderbird)-l10n-fr", "$(thunderbird)-l10n-en-gb",
-			"$(thunderbird)-nostalgy",
+			"$(thunderbird)",
+			"$(thunderbird)-$(thunderbird_l10n)-en-gb",
+			"$(thunderbird)-$(thunderbird_l10n)-fr",
+			"enigmail",
 			"network-manager-openvpn-gnome",
 			"virt-manager"
 		};
 
-	"install_packages" slist => { @(package_list_shell), @(package_list_apps) };
+	"install_packages"
+		slist  => { @(package_list_shell), @(package_list_apps), @(distro_specific_packages) },
+		policy => "ifdefined";
 
  packages:
 	"$(install_packages)"
