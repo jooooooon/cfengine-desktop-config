@@ -28,7 +28,8 @@ bundle agent base_packages {
 			"$(thunderbird)-$(thunderbird_l10n)-fr",
 			"enigmail",
 			"network-manager-openvpn-gnome",
-			"virt-manager"
+			"virt-manager",
+			"gimp"
 		};
 
 	"install_packages"
