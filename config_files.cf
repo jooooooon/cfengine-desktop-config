@@ -1,0 +1,6 @@
+bundle agent copy_config_files {
+	files:
+		"/home/jclarke/"
+			copy_from    => local_cp("home_config_files/"),
+			depth_search => recurse("inf");
+}

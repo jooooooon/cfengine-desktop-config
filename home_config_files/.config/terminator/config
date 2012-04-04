@@ -1,0 +1,7 @@
+[global_config]
+  window_state = maximise
+
+[profiles]
+  [[default]]
+    scroll_on_output = False
+    scrollback_lines = 10000

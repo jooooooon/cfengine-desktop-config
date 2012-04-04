@@ -1,11 +1,13 @@
 body common control {
 	bundlesequence => {
 		"base_packages",
-		"resolv_conf"
+		"resolv_conf",
+		"copy_config_files",
 	};
 	inputs         => {
 		"cfengine_stdlib.cf",
 		"base_packages.cf",
-		"resolv_conf.cf"
+		"resolv_conf.cf",
+		"config_files.cf",
 	};
 }
