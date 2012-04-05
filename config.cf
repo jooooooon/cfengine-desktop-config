@@ -1,0 +1,8 @@
+bundle common config {
+	vars:
+		"username" string => "jclarke";
+
+		# We must fetch the PWD at the beginning of the run
+		# because CFEngine changes directory to edit files, etc
+		"pwd"      string => execresult("/bin/echo $PWD", "useshell");
+}

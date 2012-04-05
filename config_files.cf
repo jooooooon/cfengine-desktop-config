@@ -1,10 +1,10 @@
 bundle agent copy_config_files {
 	vars:
-		"promise_dir" string => execresult("/bin/echo $PWD/`/usr/bin/dirname ${this.promise_filename}`", "useshell");
+		"promise_dir" string => execresult("/bin/echo ${config.pwd}/`/usr/bin/dirname ${this.promise_filename}`", "useshell");
 
 	files:
-		"/home/jclarke/"
+		"/home/${config.username}/"
+			perms        => owner("${config.username}"),
 			copy_from    => local_cp("${promise_dir}/home_config_files/"),
 			depth_search => recurse("inf");
-
 }
