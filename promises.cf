@@ -3,6 +3,7 @@ body common control {
 		"base_packages",
 		"resolv_conf",
 		"copy_config_files",
+		"clone_git_repos",
 	};
 	inputs         => {
 		"config.cf",
@@ -10,5 +11,6 @@ body common control {
 		"base_packages.cf",
 		"resolv_conf.cf",
 		"config_files.cf",
+		"clone_git_repos.cf",
 	};
 }

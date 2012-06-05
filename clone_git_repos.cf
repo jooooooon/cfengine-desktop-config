@@ -1,0 +1,64 @@
+bundle agent clone_git_repos {
+
+	vars:
+	
+		"git_repos_base"         string => "/home/${config.username}/COMMUNAUTES/";
+
+		"git_repos[CFEngine][0]" string => "git@github.com:cfengine/core.git";
+		"git_repos[CFEngine][1]" string => "git@github.com:cfengine/design-center.git";
+
+		"git_repos[OpenLDAP][0]" string => "git://git.openldap.org/openldap.git";
+		"git_repos[OpenLDAP][1]" string => "git://git.openldap.org/openldap-etc.git";
+		"git_repos[OpenLDAP][2]" string => "git://git.openldap.org/openldap-www.git";
+
+		"git_repos[FusionInventory][0] string => "git@github.com:fusinv/fusioninventory-agent.git";
+
+		"git_repos[Rudder][0]"   string => "git@github.com:Normation/rudder-parent-pom.git";
+		"git_repos[Rudder][1]"   string => "git@github.com:Normation/rudder-commons.git";
+		"git_repos[Rudder][2]"   string => "git@github.com:Normation/cf-clerk.git";
+		"git_repos[Rudder][3]"   string => "git@github.com:Normation/scala-ldap.git";
+		"git_repos[Rudder][4]"   string => "git@github.com:Normation/ldap-inventory.git";
+		"git_repos[Rudder][5]"   string => "git@github.com:Normation/rudder.git";
+		"git_repos[Rudder][6]"   string => "git@github.com:Normation/rudder-plugin-helloworld.git";
+		"git_repos[Rudder][7]"   string => "git@github.com:Normation/rudder-doc.git";
+		"git_repos[Rudder][8]"   string => "git@github.com:Normation/rudder-techniques.git";
+		"git_repos[Rudder][9]"   string => "git@github.com:Normation/rudder-packages.git";
+		"git_repos[Rudder][10]"  string => "git@github.com:Normation/rudder-vagrant.git";
+
+		"git_repos[Rudder_internal][0]"  string => "ssh://git@git.normation.com:5190/packaging.git";
+
+		"projects"                slist => getindices("git_repos");
+
+	methods:
+		"placeholder" usebundle => clone_git_repos_project("$(git_repos_base)/$(projects)", "clone_git_repos.git_repos[$(projects)]");
+}
+
+bundle agent clone_git_repos_project(basepath, repos) {
+	vars:
+
+		"repos_keys"   slist => getindices("$(repos)");
+
+		"repo_data[$(repos_keys)][dirname]" string => execresult("/usr/bin/basename $($(repos)[$(repos_keys)]) .git", "noshell");
+
+	classes:
+		"repo_dir_exists_$(repos_keys)" expression => isdir("$(basepath)/$(repo_data[$(repos_keys)][dirname])");
+
+	files:
+		"$(basepath)/."
+			create => "true",
+			perms  => owner("$(config.username)");
+
+		"$(basepath)/$(repo_data[$(repos_keys)][dirname])/."
+			perms  => owner("$(config.username)");
+
+		"$(basepath)/$(repo_data[$(repos_keys)][dirname])"
+			depth_search => recurse("inf"),
+			perms  => owner("$(config.username)");
+			
+		
+	commands:
+		"/usr/bin/git clone $($(repos)[$(repos_keys)])"
+			contain    => in_dir("$(basepath)"),
+			ifvarclass => "!repo_dir_exists_$(repos_keys)";
+}
+
