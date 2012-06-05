@@ -15,10 +15,12 @@ bundle agent base_packages {
 	"package_list_shell" slist => {
 			"vim",
 			"tree",
-			"htop",
+			"htop", "iotop",
 			"rsync",
 			"git-core", "gitk",
-			"bsdgames"
+			"bsdgames",
+			"apt-file", "python-software-properties",
+			"ldap-utils",
 		};
 
 	"package_list_apps" slist => {
@@ -29,16 +31,46 @@ bundle agent base_packages {
 			"enigmail",
 			"network-manager-openvpn-gnome",
 			"virt-manager",
-			"gimp"
+			"gimp",
+			"wireshark",
+			"vlc",
 		};
 
 	"install_packages"
 		slist  => { @(package_list_shell), @(package_list_apps), @(distro_specific_packages) },
 		policy => "ifdefined";
 
+	"remove_packages"
+		slist => { "gnumeric", "abiword" };
+
+ classes:
+	"install_wireless_firmware" expression => returnszero("/usr/bin/lspci | grep 'Network controller: Intel Corporation Centrino Wireless-N 1000'", "useshell");
+	"need_debian_non_free_repo"         or => { "install_wireless_firmware" };
+
  packages:
 	"$(install_packages)"
 		package_method  => generic,
 		package_policy  => "addupdate",
 		action          => if_elapsed(120); # only try updating every few hours, that's already plenty!
+
+	"$(remove_packages)"
+		package_method  => generic,
+		package_policy  => "delete",
+		action          => if_elapsed(120); # only try updating every few hours, that's already plenty!
+
+	"firmware-iwlwifi"
+		package_method  => generic,
+		package_policy  => "addupdate",
+		ifvarclass      => "debian_non_free_repo_added",
+		action          => if_elapsed(120); # only try updating every few hours, that's already plenty!
+		
+
+commands:
+	"/usr/bin/apt-add-repository 'http://ftp.fr.debian.org/debian/ non-free'"
+		ifvarclass      => "need_debian_non_free_repo",
+		classes         => if_repaired("debian_non_free_repo_added"),
+		action          => if_elapsed(120); # only try updating every few hours, that's already plenty!
+	
+	"/usr/bin/aptitude update"
+		ifvarclass      => "debian_non_free_repo_added";
 }
